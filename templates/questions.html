@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Flask Tools - Survey Question{% endblock %}
+
+{% block content %}
+    <h1>Survey</h1>
+    <h2>{{ question }}</h2>
+    <form id="answer_form" action="/answer" method="post">
+        {% for choise in choices %}
+        <input type="radio" name="answer" value="{{ choise }}">
+        <label for="answer">{{ choise }}</label>
+        {% endfor %}
+    </form>
+{% endblock %}
