@@ -1,10 +1,10 @@
-from random import choices
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "abcd1234"
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 responses = []
@@ -23,4 +23,11 @@ def show_question(question_num):
     question_obj = satisfaction_survey.questions
     question_title = satisfaction_survey.questions[question_num].question
     question_choices = satisfaction_survey.questions[question_num].choices
-    return render_template("questions.html", question=question_title, choices=question_choices)
+    return render_template("questions.html", question=question_title, choices=question_choices, question_id=question_num)
+
+@app.route('/answer', methods=["POST"])
+def process_answer():
+    """Process to append the answer to the responses list, and then redirect to the next question"""
+    responses.append(request.form["answer"])
+    next_question = int(request.form["current_q"]) + 1
+    return redirect(f'/questions/{ next_question }')

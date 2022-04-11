@@ -8,6 +8,7 @@
     <form id="answer_form" action="/answer" method="post">
         {% for choise in choices %}
         <input type="radio" name="answer" value="{{ choise }}">
+        <input type="text" name="current_q" value="{{ question_id }}" hidden>
         <label for="answer">{{ choise }}</label>
         {% endfor %}
     </form>
