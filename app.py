@@ -21,9 +21,17 @@ def show_question(question_num):
     """Return page to build a route that can handle questions — it should handle URLs like"""
     question_num = int(question_num)
     question_obj = satisfaction_survey.questions
-    question_title = satisfaction_survey.questions[question_num].question
-    question_choices = satisfaction_survey.questions[question_num].choices
-    return render_template("questions.html", question=question_title, choices=question_choices, question_id=question_num)
+    question_qty = len(question_obj)
+    question_answered = len(responses)
+
+    if question_num == question_answered and question_num < question_qty:
+        question_title = satisfaction_survey.questions[question_num].question
+        question_choices = satisfaction_survey.questions[question_num].choices
+        return render_template("questions.html", question=question_title, choices=question_choices, question_id=question_num)
+    elif question_num == question_answered and question_num == question_qty:
+        return redirect('/thank_you')
+    else:
+        return redirect(f'/questions/{question_answered}')
 
 @app.route('/answer', methods=["POST"])
 def process_answer():
@@ -31,3 +39,8 @@ def process_answer():
     responses.append(request.form["answer"])
     next_question = int(request.form["current_q"]) + 1
     return redirect(f'/questions/{ next_question }')
+
+@app.route('/thank_you')
+def thank_you():
+    """Redirect to a simple 'Thank You!' page"""
+    return render_template("thank_you.html")
