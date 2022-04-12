@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import *
 
@@ -31,6 +31,8 @@ def show_question(question_num):
     elif question_num == question_answered and question_num == question_qty:
         return redirect('/thank_you')
     else:
+        flash("SORRY...!")
+        flash("You are trying to access an invalid question.")
         return redirect(f'/questions/{question_answered}')
 
 @app.route('/answer', methods=["POST"])

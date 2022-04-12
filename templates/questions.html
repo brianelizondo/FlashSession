@@ -4,6 +4,15 @@
 
 {% block content %}
     <h1>Survey</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+    <p>{{ msg }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
     <h2>{{ question }}</h2>
     <form id="answer_form" action="/answer" method="post">
         {% for choise in choices %}
