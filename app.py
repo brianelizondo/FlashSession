@@ -1,4 +1,5 @@
-from flask import Flask, redirect, render_template, request, flash
+from http.client import responses
+from flask import Flask, redirect, render_template, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from surveys import *
 
@@ -7,7 +8,7 @@ app.config['SECRET_KEY'] = "abcd1234"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
-responses = []
+# responses = []
 
 @app.route('/')
 def home_page():
@@ -16,9 +17,17 @@ def home_page():
     instructions = satisfaction_survey.instructions
     return render_template("home.html", survey_title=title, survey_instructions=instructions)
 
+@app.route('/start_survey', methods=["POST"])
+def start_survey():
+    """Request to set session['responses'] to an empty list"""
+    session['responses'] = []
+    return redirect('/questions/0')
+
 @app.route('/questions/<question_num>')
 def show_question(question_num):
     """Return page to build a route that can handle questions — it should handle URLs like"""
+    responses = session['responses']
+
     question_num = int(question_num)
     question_obj = satisfaction_survey.questions
     question_qty = len(question_obj)
@@ -38,11 +47,16 @@ def show_question(question_num):
 @app.route('/answer', methods=["POST"])
 def process_answer():
     """Process to append the answer to the responses list, and then redirect to the next question"""
+    responses = session['responses']
     responses.append(request.form["answer"])
+    session['responses'] = responses
     next_question = int(request.form["current_q"]) + 1
     return redirect(f'/questions/{ next_question }')
 
 @app.route('/thank_you')
 def thank_you():
     """Redirect to a simple 'Thank You!' page"""
+    responses = session['responses']
+    responses.clear()
+    session['responses'] = responses
     return render_template("thank_you.html")
